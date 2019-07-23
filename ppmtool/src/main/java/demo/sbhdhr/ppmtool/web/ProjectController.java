@@ -32,7 +32,6 @@ public class ProjectController {
 	@Autowired
 	private MapValidationErrorService mapValidService;
 
-	
 	@PostMapping("")
 	public ResponseEntity<?> createProject(@Valid @RequestBody Project project, BindingResult result) {
 
@@ -65,18 +64,26 @@ public class ProjectController {
 
 		return new ResponseEntity<String>("Project ID: " + projectId.toUpperCase() + " deleted.", HttpStatus.OK);
 	}
-	
-	@PutMapping("")
-	public ResponseEntity<?> updateProject(@Valid @RequestBody Project project, BindingResult result) {
+
+	@PutMapping("/{projectId}")
+	public ResponseEntity<?> updateProject(@PathVariable String projectId, @Valid @RequestBody Project project,
+			BindingResult result) {
+		
 		ResponseEntity<?> errorMap = mapValidService.mapErrors(result);
 		if (errorMap != null)
 			return errorMap;
 		
-		Project oldProject = projectService.findByProjectIdentifier(project.getProjectIdentifier());
+		
+
+		Project oldProject = projectService.findByProjectIdentifier(projectId);
 		if (oldProject == null) {
-			throw new ProjectIdException("Project ID: " + project.getProjectIdentifier() + " does not exist.");
+			throw new ProjectIdException("Project ID: " + projectId + " does not exist.");
+		}else if (!(project.getProjectIdentifier().equals(projectId))) {
+			throw new ProjectIdException("Project ID cannot be updated.");
 		}
 		
+		project.setId(oldProject.getId());
+
 		projectService.saveOrUpdateProject(project);
 		Project newProject = projectService.findByProjectIdentifier(project.getProjectIdentifier());
 		return new ResponseEntity<Project>(newProject, HttpStatus.CREATED);
