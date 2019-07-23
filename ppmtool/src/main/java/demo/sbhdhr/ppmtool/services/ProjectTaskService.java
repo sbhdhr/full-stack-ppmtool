@@ -1,5 +1,7 @@
 package demo.sbhdhr.ppmtool.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,21 +23,36 @@ public class ProjectTaskService {
 		
 		Project project = projectService.findByProjectIdentifier(projID);
 		
-		if(projectTask.getProject()==null) {
+		if(project!=null) {
 		
-			project.setNoOfTasks(project.getNoOfTasks()+1);
-			String seqString = project.getProjectIdentifier()+"-"+project.getNoOfTasks();
+			if(projectTask.getProject()==null) {
 			
-			
-			projectTask.setProject(project);
-			projectTask.setProjectSequence(seqString);
-			
-			
-			project.getTasks().add(projectTask);
-			
-			//projectService.saveOrUpdateProject(project);
-		}
+				project.setNoOfTasks(project.getNoOfTasks()+1);
+				String seqString = project.getProjectIdentifier()+"-"+project.getNoOfTasks();
+				
+				
+				projectTask.setProject(project);
+				projectTask.setProjectSequence(seqString);
+				
+				
+				project.getTasks().add(projectTask);
+				
+			}
 		
 		return projectTaskRepository.save(projectTask);
+		}
+		else {
+			return null;
+		}
+	}
+
+
+	public ProjectTask findByProjectSequence(String projectSequence) {
+		return projectTaskRepository.findByProjectSequence(projectSequence);
+	}
+
+
+	public List<ProjectTask> findByProjectId(String projectId) {
+		return projectTaskRepository.findByProjectId(projectId);
 	}
 }
