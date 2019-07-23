@@ -1,18 +1,22 @@
 package demo.sbhdhr.ppmtool.model;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Project {
@@ -43,6 +47,12 @@ public class Project {
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date updatedAt;
+	
+	private Integer noOfTasks = 0;
+
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+	@JsonIgnore
+	List<ProjectTask> tasks;
 
 	public Long getId() {
 		return id;
@@ -90,6 +100,22 @@ public class Project {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	public Integer getNoOfTasks() {
+		return noOfTasks;
+	}
+
+	public void setNoOfTasks(Integer noOfTasks) {
+		this.noOfTasks = noOfTasks;
+	}
+
+	public List<ProjectTask> getTasks() {
+		return tasks;
+	}
+
+	public void setTasks(List<ProjectTask> tasks) {
+		this.tasks = tasks;
 	}
 
 	public Date getCreatedAt() {

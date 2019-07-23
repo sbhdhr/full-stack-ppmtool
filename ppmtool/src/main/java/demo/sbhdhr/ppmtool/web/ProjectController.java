@@ -68,24 +68,13 @@ public class ProjectController {
 	@PutMapping("/{projectId}")
 	public ResponseEntity<?> updateProject(@PathVariable String projectId, @Valid @RequestBody Project project,
 			BindingResult result) {
-		
+
 		ResponseEntity<?> errorMap = mapValidService.mapErrors(result);
 		if (errorMap != null)
 			return errorMap;
-		
-		
 
-		Project oldProject = projectService.findByProjectIdentifier(projectId);
-		if (oldProject == null) {
-			throw new ProjectIdException("Project ID: " + projectId + " does not exist.");
-		}else if (!(project.getProjectIdentifier().equals(projectId))) {
-			throw new ProjectIdException("Project ID cannot be updated.");
-		}
-		
-		project.setId(oldProject.getId());
+		Project newProject = projectService.updateProject(projectId, project);
 
-		projectService.saveOrUpdateProject(project);
-		Project newProject = projectService.findByProjectIdentifier(project.getProjectIdentifier());
 		return new ResponseEntity<Project>(newProject, HttpStatus.CREATED);
 	}
 }
